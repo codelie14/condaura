@@ -290,8 +290,11 @@ GET  /api/reviews/stats/    → Statistiques de revue
 
 ### 4.1 Design System
 **Palette de couleurs :**
-- Primaire : Bleu (#4F46E5) - Actions principales
-- Secondaire : Violet (#7C3AED) - Éléments d'accentuation
+- Primaire : Bleu profond (#3d1b3) - Actions principales et brand
+- Secondaire : Bleu clair (#fcfdc) - Éléments d'accentuation
+- Accent 1 : Turquoise (#31aef8) - Highlights et liens
+- Accent 2 : Violet doux (#a6d0f4) - Éléments secondaires
+- Accent 3 : Lavande (#7bd3f0) - Arrière-plans subtils
 - Succès : Vert (#10B981) - Validations
 - Danger : Rouge (#EF4444) - Révocations
 - Neutre : Gris (#6B7280) - Texte et bordures
