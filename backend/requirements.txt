@@ -1,0 +1,40 @@
+# Core Django
+Django==4.2.11
+djangorestframework==3.14.0
+django-cors-headers==4.0.0
+django-environ==0.10.0
+
+# Database
+psycopg2-binary==2.9.6
+redis==4.5.5
+
+# Authentication
+djangorestframework-simplejwt==5.2.2
+django-oauth-toolkit==1.7.0
+
+# Task Queue
+celery==5.2.7
+
+# File Processing
+pandas==2.0.2
+openpyxl==3.1.2
+reportlab==4.0.4
+
+# Utilities
+python-decouple==3.8
+Pillow==9.5.0
+django-extensions==3.2.3
+
+# Testing
+pytest==7.3.1
+pytest-django==4.5.2
+factory-boy==3.2.1
+
+# Development
+django-debug-toolbar==4.1.0
+flake8==6.0.0
+black==23.3.0
+
+# Production
+gunicorn==20.1.0
+whitenoise==6.4.0

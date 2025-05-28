@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Rapport de campagne - {{ campaign.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #3d1b3;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .summary {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f7f9fc;
+            border-radius: 5px;
+        }
+        .summary h2 {
+            color: #3d1b3;
+            margin-top: 0;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .stat-box {
+            width: 30%;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .stat-box.approved {
+            background-color: #e8f5e9;
+        }
+        .stat-box.rejected {
+            background-color: #ffebee;
+        }
+        .stat-box.pending {
+            background-color: #fff8e1;
+        }
+        .stat-box h3 {
+            margin: 0 0 10px 0;
+        }
+        .stat-box .number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+        }
+        .resource-stats {
+            margin: 20px 0;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Rapport de campagne: {{ campaign.name }}</h1>
+        <p>Période: {{ campaign.start_date|date:"d/m/Y" }} - {{ campaign.end_date|date:"d/m/Y" }}</p>
+        <p>Statut: {{ campaign.get_status_display }} - Progression: {{ campaign.progress }}%</p>
+        <p>Date de génération: {{ date_generated }}</p>
+    </div>
+    
+    <div class="summary">
+        <h2>Synthèse</h2>
+        <p>Cette campagne contient <strong>{{ total_reviews }}</strong> revues d'accès.</p>
+    </div>
+    
+    <div class="stats">
+        <div class="stat-box approved">
+            <h3>Approuvés</h3>
+            <div class="number">{{ approved }}</div>
+            <div class="percent">{{ approved_percent }}%</div>
+        </div>
+        <div class="stat-box rejected">
+            <h3>Rejetés</h3>
+            <div class="number">{{ rejected }}</div>
+            <div class="percent">{{ rejected_percent }}%</div>
+        </div>
+        <div class="stat-box pending">
+            <h3>En attente</h3>
+            <div class="number">{{ pending }}</div>
+            <div class="percent">{{ pending_percent }}%</div>
+        </div>
+    </div>
+    
+    <h2>Statistiques par type de ressource</h2>
+    <table class="resource-stats">
+        <thead>
+            <tr>
+                <th>Type de ressource</th>
+                <th>Total</th>
+                <th>Approuvés</th>
+                <th>Rejetés</th>
+                <th>En attente</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resource_type, stats in resource_stats.items %}
+            <tr>
+                <td>{{ resource_type }}</td>
+                <td>{{ stats.total }}</td>
+                <td>{{ stats.approved }}</td>
+                <td>{{ stats.rejected }}</td>
+                <td>{{ stats.pending }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="page-break"></div>
+    
+    <h2>Détail des revues</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Département</th>
+                <th>Ressource</th>
+                <th>Type</th>
+                <th>Décision</th>
+                <th>Réviseur</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review.access.user.first_name }} {{ review.access.user.last_name }}</td>
+                <td>{{ review.access.user.department }}</td>
+                <td>{{ review.access.resource_name }}</td>
+                <td>{{ review.access.resource_type }}</td>
+                <td>{{ review.get_decision_display }}</td>
+                <td>{{ review.reviewer.first_name }} {{ review.reviewer.last_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Généré par Condaura - Plateforme de revue d'accès</p>
+        <p>Rapport confidentiel - {{ date_generated }}</p>
+    </div>
+</body>
+</html> 
