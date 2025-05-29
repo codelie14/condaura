@@ -105,10 +105,24 @@ class ReviewViewSet(viewsets.ModelViewSet):
         
         # Admin users can see all reviews
         if user.is_staff or user.role == 'admin':
-            return Review.objects.all()
+            queryset = Review.objects.all()
+        else:
+            # Reviewers can only see their assigned reviews
+            queryset = Review.objects.filter(reviewer=user)
         
-        # Reviewers can only see their assigned reviews
-        return Review.objects.filter(reviewer=user)
+        # Handle decision filter case-insensitive
+        decision = self.request.query_params.get('decision', None)
+        if decision:
+            if decision.lower() == 'pending':
+                queryset = queryset.filter(decision='pending')
+            elif decision.lower() == 'approved':
+                queryset = queryset.filter(decision='approved')
+            elif decision.lower() == 'rejected':
+                queryset = queryset.filter(decision='rejected')
+            elif decision.lower() == 'deferred':
+                queryset = queryset.filter(decision='deferred')
+        
+        return queryset
     
     def get_serializer_class(self):
         if self.action == 'retrieve':

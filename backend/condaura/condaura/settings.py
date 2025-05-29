@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'users',
     'campaigns',
     'access',
+    'access_review',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -157,6 +159,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'UNAUTHENTICATED_USER': None,
 }
 
 # JWT Settings
@@ -165,6 +169,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 # CORS Settings

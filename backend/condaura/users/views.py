@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions, status, generics
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 import csv
 import io
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     UserSerializer, 
@@ -152,6 +153,30 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        # Generate token for the newly registered user
+        refresh = RefreshToken.for_user(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+        
+        # Format response to match frontend expectations
+        return Response({
+            'token': tokens['access'],
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'role': user.role if hasattr(user, 'role') else 'user'
+            }
+        }, status=status.HTTP_201_CREATED)
 
 class PasswordChangeView(generics.UpdateAPIView):
     serializer_class = PasswordChangeSerializer
@@ -207,3 +232,42 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         """Mark all notifications as read"""
         self.get_queryset().filter(is_read=False).update(is_read=True)
         return Response({'status': 'All notifications marked as read'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def login_view(request):
+    """Custom login view that returns JWT token and user data"""
+    email = request.data.get('email')
+    password = request.data.get('password')
+    
+    if not email or not password:
+        return Response({'detail': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Find user by email
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # Check password
+    if not user.check_password(password):
+        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # Generate token
+    refresh = RefreshToken.for_user(user)
+    tokens = {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+    
+    # Format response to match frontend expectations
+    return Response({
+        'token': tokens['access'],
+        'user': {
+            'id': user.id,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'role': user.role if hasattr(user, 'role') else 'user'
+        }
+    })
