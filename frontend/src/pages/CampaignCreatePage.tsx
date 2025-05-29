@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import campaignService from '../services/campaign.service';
 import { toast } from 'react-toastify';
+import { UserRole } from '../services/auth.service';
 
 // Define the campaign data interface
 interface CampaignFormData {
@@ -10,10 +11,17 @@ interface CampaignFormData {
   start_date: string;
   end_date: string;
   department?: string;
-  resource_type?: string;
-  access_level?: string;
+  layer?: string;
+  profile?: string;
   reviewers: string[];
   assignment_method: 'manual' | 'manager' | 'resource_owner';
+}
+
+interface Reviewer {
+  id: number | string;
+  email: string;
+  name: string;
+  role?: UserRole;
 }
 
 const CampaignCreatePage: React.FC = () => {
@@ -24,17 +32,18 @@ const CampaignCreatePage: React.FC = () => {
     start_date: '',
     end_date: '',
     department: '',
-    resource_type: '',
-    access_level: '',
+    layer: '',
+    profile: '',
     reviewers: [],
     assignment_method: 'manual',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [availableReviewers, setAvailableReviewers] = useState<any[]>([]);
+  const [availableReviewers, setAvailableReviewers] = useState<Reviewer[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
-  const [resourceTypes, setResourceTypes] = useState<string[]>([]);
-  const [accessLevels, setAccessLevels] = useState<string[]>([]);
+  const [layers, setLayers] = useState<string[]>([]);
+  const [profiles, setProfiles] = useState<string[]>([]);
+  const [roles, setRoles] = useState<UserRole[]>([]);
 
   // Fetch necessary data on component mount
   useEffect(() => {
@@ -46,13 +55,14 @@ const CampaignCreatePage: React.FC = () => {
         
         // Placeholder data until APIs are implemented
         setAvailableReviewers([
-          { id: 1, email: 'reviewer1@example.com', name: 'Reviewer One' },
-          { id: 2, email: 'reviewer2@example.com', name: 'Reviewer Two' },
+          { id: 1, email: 'reviewer1@example.com', name: 'Reviewer One', role: 'Back office' },
+          { id: 2, email: 'reviewer2@example.com', name: 'Reviewer Two', role: 'Front office' },
         ]);
         
-        setDepartments(['IT', 'HR', 'Finance', 'Marketing', 'Operations']);
-        setResourceTypes(['Application', 'Database', 'Folder', 'Server', 'API']);
-        setAccessLevels(['Read', 'Write', 'Admin', 'Full Control']);
+        setDepartments(['DIGITAL', 'CS', 'PS', 'RAN', 'TRANS', 'IN', 'VAS', 'CLOUD', 'IP']);
+        setLayers(['Application', 'Database', 'System']);
+        setProfiles(['Admin', 'Read/Write', 'Write only', 'user', 'Viewer', 'Operator']);
+        setRoles(['Admin', 'Back office', 'Front office', 'DAO', 'Digital Team']);
       } catch (err) {
         console.error('Failed to fetch data:', err);
       }
@@ -91,8 +101,8 @@ const CampaignCreatePage: React.FC = () => {
         end_date: formData.end_date,
         // Include optional fields only if they have values
         ...(formData.department ? { department: formData.department } : {}),
-        ...(formData.resource_type ? { resource_type: formData.resource_type } : {}),
-        ...(formData.access_level ? { access_level: formData.access_level } : {}),
+        ...(formData.layer ? { layer: formData.layer } : {}),
+        ...(formData.profile ? { profile: formData.profile } : {}),
         ...(formData.assignment_method === 'manual' ? { reviewers: formData.reviewers } : {}),
         assignment_method: formData.assignment_method
       };
@@ -213,37 +223,54 @@ const CampaignCreatePage: React.FC = () => {
           </div>
           
           <div className="mb-4">
-            <label htmlFor="resource_type" className="block text-sm font-medium text-gray-700 mb-1">
-              Resource Type (Optional)
+            <label htmlFor="layer" className="block text-sm font-medium text-gray-700 mb-1">
+              Layer (Optional)
             </label>
             <select
-              id="resource_type"
-              name="resource_type"
-              value={formData.resource_type}
+              id="layer"
+              name="layer"
+              value={formData.layer}
               onChange={handleInputChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2"
             >
-              <option value="">All Resource Types</option>
-              {resourceTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              <option value="">All Layers</option>
+              {layers.map(layer => (
+                <option key={layer} value={layer}>{layer}</option>
               ))}
             </select>
           </div>
           
           <div className="mb-4">
-            <label htmlFor="access_level" className="block text-sm font-medium text-gray-700 mb-1">
-              Access Level (Optional)
+            <label htmlFor="profile" className="block text-sm font-medium text-gray-700 mb-1">
+              Profil (Optional)
             </label>
             <select
-              id="access_level"
-              name="access_level"
-              value={formData.access_level}
+              id="profile"
+              name="profile"
+              value={formData.profile}
               onChange={handleInputChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2"
             >
-              <option value="">All Access Levels</option>
-              {accessLevels.map(level => (
-                <option key={level} value={level}>{level}</option>
+              <option value="">All Profiles</option>
+              {profiles.map(profile => (
+                <option key={profile} value={profile}>{profile}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+              Role (Optional)
+            </label>
+            <select
+              id="role"
+              name="role"
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+            >
+              <option value="">All Roles</option>
+              {roles.map(role => (
+                <option key={role} value={role}>{role}</option>
               ))}
             </select>
           </div>
@@ -284,7 +311,7 @@ const CampaignCreatePage: React.FC = () => {
               >
                 {availableReviewers.map(reviewer => (
                   <option key={reviewer.id} value={reviewer.id}>
-                    {reviewer.name} ({reviewer.email})
+                    {reviewer.name} ({reviewer.email}) - {reviewer.role || 'No role'}
                   </option>
                 ))}
               </select>

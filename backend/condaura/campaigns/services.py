@@ -37,14 +37,16 @@ class CampaignService:
             for scope in scopes:
                 if scope.scope_type == 'department':
                     access_query |= Q(user__department=scope.scope_value)
-                elif scope.scope_type == 'resource_type':
-                    access_query |= Q(resource_type=scope.scope_value)
-                elif scope.scope_type == 'access_level':
-                    access_query |= Q(access_level=scope.scope_value)
+                elif scope.scope_type == 'layer':
+                    access_query |= Q(layer=scope.scope_value)
+                elif scope.scope_type == 'profile':
+                    access_query |= Q(profile=scope.scope_value)
                 elif scope.scope_type == 'user':
                     user = User.objects.filter(email=scope.scope_value).first()
                     if user:
                         access_query |= Q(user=user)
+                elif scope.scope_type == 'role':
+                    access_query |= Q(user__role=scope.scope_value)
             
             # Obtenir les accès concernés
             accesses = Access.objects.filter(access_query)
@@ -130,15 +132,15 @@ class CampaignService:
                 'decision'
             ).annotate(count=Count('decision'))
             
-            # Répartition par type de ressource
-            resource_stats = Review.objects.filter(campaign=campaign).values(
-                'access__resource_type'
-            ).annotate(count=Count('access__resource_type'))
+            # Répartition par layer (anciennement resource_type)
+            layer_stats = Review.objects.filter(campaign=campaign).values(
+                'access__layer'
+            ).annotate(count=Count('access__layer'))
             
-            # Répartition par niveau d'accès
-            access_level_stats = Review.objects.filter(campaign=campaign).values(
-                'access__access_level'
-            ).annotate(count=Count('access__access_level'))
+            # Répartition par profile (anciennement access_level)
+            profile_stats = Review.objects.filter(campaign=campaign).values(
+                'access__profile'
+            ).annotate(count=Count('access__profile'))
             
             # Répartition par département
             department_stats = Review.objects.filter(campaign=campaign).values(
@@ -150,8 +152,8 @@ class CampaignService:
                 'total_reviews': total_reviews,
                 'progress': campaign.progress,
                 'by_decision': {item['decision']: item['count'] for item in decision_stats},
-                'by_resource_type': {item['access__resource_type']: item['count'] for item in resource_stats},
-                'by_access_level': {item['access__access_level']: item['count'] for item in access_level_stats},
+                'by_resource_type': {item['access__layer']: item['count'] for item in layer_stats},  # Garder la clé pour compatibilité API
+                'by_access_level': {item['access__profile']: item['count'] for item in profile_stats},  # Garder la clé pour compatibilité API
                 'by_department': {item['access__user__department']: item['count'] for item in department_stats}
             }
             

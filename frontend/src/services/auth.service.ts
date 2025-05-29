@@ -14,6 +14,9 @@ export interface RegisterData {
   confirmPassword?: string;  // Used in form but not sent to API
 }
 
+// Les rôles disponibles dans l'application
+export type UserRole = 'Admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team';
+
 export interface AuthResponse {
   token: string;
   user: {
@@ -21,7 +24,7 @@ export interface AuthResponse {
     email: string;
     first_name: string;
     last_name: string;
-    role: string;
+    role: UserRole | string;
   };
 }
 

@@ -5,15 +5,15 @@ class Access(models.Model):
     access_id = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accesses')
     resource_name = models.CharField(max_length=200)
-    resource_type = models.CharField(max_length=50)
-    access_level = models.CharField(max_length=50)
+    layer = models.CharField(max_length=50)
+    profile = models.CharField(max_length=50)
     granted_date = models.DateField()
     last_used = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"{self.user.username} - {self.resource_name} ({self.access_level})"
+        return f"{self.user.username} - {self.resource_name} ({self.profile})"
     
     class Meta:
         verbose_name = 'Access'

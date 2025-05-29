@@ -3,15 +3,15 @@ from .models import Access, Review
 
 @admin.register(Access)
 class AccessAdmin(admin.ModelAdmin):
-    list_display = ('access_id', 'user', 'resource_name', 'resource_type', 'access_level', 'granted_date', 'last_used')
-    list_filter = ('resource_type', 'access_level', 'granted_date')
+    list_display = ('access_id', 'user', 'resource_name', 'layer', 'profile', 'granted_date', 'last_used')
+    list_filter = ('layer', 'profile', 'granted_date')
     search_fields = ('access_id', 'resource_name', 'user__email', 'user__first_name', 'user__last_name')
     date_hierarchy = 'granted_date'
     readonly_fields = ('created_at', 'updated_at')
     
     fieldsets = (
         (None, {'fields': ('access_id', 'user')}),
-        ('Resource', {'fields': ('resource_name', 'resource_type', 'access_level')}),
+        ('Resource', {'fields': ('resource_name', 'layer', 'profile')}),
         ('Dates', {'fields': ('granted_date', 'last_used', 'created_at', 'updated_at')}),
     )
 

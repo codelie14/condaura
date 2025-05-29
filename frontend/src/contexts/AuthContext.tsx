@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthService, { LoginCredentials, RegisterData } from '../services/auth.service';
 
+// Les valeurs possibles pour les rôles utilisateur
+type UserRole = 'Admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team' | string;
+
 interface User {
   id: number;
   email: string;
   first_name: string;
   last_name: string;
-  role: string;
+  role: UserRole;
   is_staff?: boolean;
   department?: string;
 }

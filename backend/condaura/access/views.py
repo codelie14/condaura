@@ -22,7 +22,7 @@ class AccessViewSet(viewsets.ModelViewSet):
     queryset = Access.objects.all()
     serializer_class = AccessSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = ['resource_type', 'access_level', 'user__department']
+    filterset_fields = ['layer', 'profile', 'user__department']
     search_fields = ['resource_name', 'user__first_name', 'user__last_name']
     
     def get_serializer_class(self):
@@ -49,8 +49,14 @@ class AccessViewSet(viewsets.ModelViewSet):
         for row in csv_data:
             try:
                 # Check for required fields
-                required_fields = ['access_id', 'user_id', 'resource_name', 'resource_type', 'access_level']
+                required_fields = ['access_id', 'user_id', 'resource_name', 'layer', 'profile']
                 missing_fields = [field for field in required_fields if field not in row or not row[field]]
+                
+                # Backward compatibility for older CSV formats
+                if 'resource_type' in row and 'layer' not in row:
+                    row['layer'] = row['resource_type']
+                if 'access_level' in row and 'profile' not in row:
+                    row['profile'] = row['access_level']
                 
                 if missing_fields:
                     errors.append(f"Row missing required fields: {', '.join(missing_fields)}")
@@ -77,8 +83,8 @@ class AccessViewSet(viewsets.ModelViewSet):
                     access_id=row['access_id'],
                     user=user,
                     resource_name=row['resource_name'],
-                    resource_type=row['resource_type'],
-                    access_level=row['access_level'],
+                    layer=row['layer'],
+                    profile=row['profile'],
                     granted_date=granted_date,
                     last_used=last_used if last_used else None
                 )
@@ -89,7 +95,7 @@ class AccessViewSet(viewsets.ModelViewSet):
                 errors.append(f"Error processing row: {str(e)}")
         
         return Response({
-            'accesses_created': accesses_created,
+            'access_created': accesses_created,
             'errors': errors
         }, status=status.HTTP_200_OK)
 
@@ -187,15 +193,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
                               .annotate(count=Count('id'))
                               .order_by('decision'))
         
-        # Count by resource type using Django's Count aggregation
-        resource_counts = list(reviews.values('access__resource_type')
+        # Count by layer (formerly resource_type) using Django's Count aggregation
+        layer_counts = list(reviews.values('access__layer')
                               .annotate(count=Count('id'))
-                              .order_by('access__resource_type'))
+                              .order_by('access__layer'))
         
         return Response({
             'total': reviews.count(),
             'by_decision': decision_counts,
-            'by_resource_type': resource_counts
+            'by_resource_type': layer_counts  # Keep key the same for API compatibility
         }, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['post'])

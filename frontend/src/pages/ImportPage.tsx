@@ -32,7 +32,7 @@ const ImportPage: React.FC = () => {
   const handleUserImport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userFile) {
-      setUserError('Please select a CSV file to import');
+      setUserError('Please select a file to import');
       return;
     }
 
@@ -63,7 +63,7 @@ const ImportPage: React.FC = () => {
   const handleAccessImport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!accessFile) {
-      setAccessError('Please select a CSV file to import');
+      setAccessError('Please select a file to import');
       return;
     }
 
@@ -121,7 +121,7 @@ const ImportPage: React.FC = () => {
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-800 mb-2">User Import</h2>
                 <p className="text-sm text-gray-600 mb-4">
-                  Upload a CSV file containing user data. The file must have the following columns:
+                  Upload a CSV or Excel file containing user data. The file must have the following columns:
                 </p>
                 
                 <div className="bg-gray-50 p-3 rounded text-sm font-mono mb-4 overflow-x-auto">
@@ -131,11 +131,11 @@ const ImportPage: React.FC = () => {
                 <form onSubmit={handleUserImport}>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select CSV file
+                      Select file
                     </label>
                     <input
                       type="file"
-                      accept=".csv"
+                      accept=".csv,.xlsx,.xls"
                       onChange={handleUserFileChange}
                       className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
@@ -144,6 +144,9 @@ const ImportPage: React.FC = () => {
                         file:bg-blue-50 file:text-blue-700
                         hover:file:bg-blue-100"
                     />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Accepted formats: CSV, Excel (.xlsx, .xls)
+                    </p>
                   </div>
                   
                   {userError && (
@@ -188,21 +191,21 @@ const ImportPage: React.FC = () => {
               <div className="mb-6">
                 <h2 className="text-lg font-medium text-gray-800 mb-2">Access Import</h2>
                 <p className="text-sm text-gray-600 mb-4">
-                  Upload a CSV file containing access data. The file must have the following columns:
+                  Upload a CSV or Excel file containing access data. The file must have the following columns:
                 </p>
                 
                 <div className="bg-gray-50 p-3 rounded text-sm font-mono mb-4 overflow-x-auto">
-                  access_id,user_id,resource_name,resource_type,access_level,granted_date,last_used
+                  access_id,user_id,resource_name,layer,profile,granted_date,last_used
                 </div>
                 
                 <form onSubmit={handleAccessImport}>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select CSV file
+                      Select file
                     </label>
                     <input
                       type="file"
-                      accept=".csv"
+                      accept=".csv,.xlsx,.xls"
                       onChange={handleAccessFileChange}
                       className="block w-full text-sm text-gray-500
                         file:mr-4 file:py-2 file:px-4
@@ -211,6 +214,9 @@ const ImportPage: React.FC = () => {
                         file:bg-blue-50 file:text-blue-700
                         hover:file:bg-blue-100"
                     />
+                    <p className="mt-1 text-sm text-gray-500">
+                      Accepted formats: CSV, Excel (.xlsx, .xls)
+                    </p>
                   </div>
                   
                   {accessError && (
@@ -232,7 +238,7 @@ const ImportPage: React.FC = () => {
                   <div className="mt-6">
                     <h3 className="font-medium text-gray-800 mb-2">Import Results</h3>
                     <div className="bg-green-50 border border-green-200 p-4 rounded">
-                      <p className="text-green-700 mb-2">Successfully imported {accessResults.accesses_created} access records.</p>
+                      <p className="text-green-700 mb-2">Successfully imported {accessResults.access_created} access records.</p>
                       
                       {accessResults.errors && accessResults.errors.length > 0 && (
                         <div>

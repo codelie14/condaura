@@ -45,9 +45,10 @@ class CampaignScope(models.Model):
     """Define the scope of a campaign (which departments, resources, etc.)"""
     SCOPE_TYPE_CHOICES = (
         ('department', 'Department'),
-        ('resource_type', 'Resource Type'),
-        ('access_level', 'Access Level'),
+        ('layer', 'Layer'),
+        ('profile', 'Profile'),
         ('user', 'Specific User'),
+        ('role', 'Role'),
     )
     
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, related_name='scopes')

@@ -33,7 +33,7 @@ const ReportsPage: React.FC = () => {
     dateTo: '',
     department: '',
   });
-  const [chartType, setChartType] = useState<'decision' | 'resource'>('decision');
+  const [chartType, setChartType] = useState<'decision' | 'layer'>('decision');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +60,7 @@ const ReportsPage: React.FC = () => {
         }
         
         // Fetch departments for filtering
-        setDepartments(['IT', 'HR', 'Finance', 'Marketing', 'Operations']);
+        setDepartments(['DIGITAL', 'CS', 'PS', 'RAN', 'TRANS', 'IN', 'VAS', 'CLOUD', 'IP']);
         
         // Fetch initial stats
         try {
@@ -172,6 +172,38 @@ const ReportsPage: React.FC = () => {
     }
   };
 
+  const exportPowerPoint = async () => {
+    try {
+      setExportLoading(true);
+      
+      // Construct query parameters
+      const params: any = {};
+      if (filters.campaignId) params.campaign = filters.campaignId;
+      if (filters.department) params.department = filters.department;
+      if (filters.dateFrom) params.date_from = filters.dateFrom;
+      if (filters.dateTo) params.date_to = filters.dateTo;
+      
+      const response = await api.get('/reports/export/pptx/', {
+        params,
+        responseType: 'blob'
+      });
+      
+      // Create a download link and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `access-review-report-${new Date().toISOString().split('T')[0]}.pptx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Failed to export PowerPoint report:', error);
+      alert('Failed to export report. Please try again.');
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   // Prepare chart data for decisions
   const decisionChartData = stats && stats.by_decision && Array.isArray(stats.by_decision) ? {
     labels: stats.by_decision.map((item: any) => item.decision || 'Unknown'),
@@ -196,8 +228,8 @@ const ReportsPage: React.FC = () => {
     ],
   } : null;
 
-  // Prepare chart data for resource types
-  const resourceChartData = stats && stats.by_resource_type && Array.isArray(stats.by_resource_type) ? {
+  // Prepare chart data for layer types (formerly resource types)
+  const layerChartData = stats && stats.by_resource_type && Array.isArray(stats.by_resource_type) ? {
     labels: stats.by_resource_type.map((item: any) => item.access__resource_type || 'Unknown'),
     datasets: [
       {
@@ -236,7 +268,7 @@ const ReportsPage: React.FC = () => {
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Export Excel
+            Excel
           </button>
           
           <button
@@ -247,7 +279,18 @@ const ReportsPage: React.FC = () => {
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Export PDF
+            PDF
+          </button>
+
+          <button
+            onClick={exportPowerPoint}
+            disabled={exportLoading || loading}
+            className="bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 disabled:bg-orange-300 flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            PowerPoint
           </button>
         </div>
       </div>
@@ -385,14 +428,14 @@ const ReportsPage: React.FC = () => {
                 </button>
                 
                 <button
-                  onClick={() => setChartType('resource')}
+                  onClick={() => setChartType('layer')}
                   className={`px-3 py-1 text-sm rounded-md ${
-                    chartType === 'resource' 
+                    chartType === 'layer' 
                       ? 'bg-blue-100 text-blue-700 font-medium' 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
-                  By Resource Type
+                  By Layer
                 </button>
               </div>
             </div>
@@ -415,9 +458,9 @@ const ReportsPage: React.FC = () => {
                       },
                     }}
                   />
-                ) : resourceChartData ? (
+                ) : layerChartData ? (
                   <Bar
-                    data={resourceChartData}
+                    data={layerChartData}
                     options={{
                       responsive: true,
                       plugins: {
@@ -426,7 +469,7 @@ const ReportsPage: React.FC = () => {
                         },
                         title: {
                           display: true,
-                          text: 'Reviews by Resource Type'
+                          text: 'Reviews by Layer'
                         },
                       },
                     }}
@@ -448,15 +491,15 @@ const ReportsPage: React.FC = () => {
                       },
                     }}
                   />
-                ) : resourceChartData ? (
+                ) : layerChartData ? (
                   <Pie
-                    data={resourceChartData}
+                    data={layerChartData}
                     options={{
                       responsive: true,
                       plugins: {
                         title: {
                           display: true,
-                          text: 'Reviews by Resource Type'
+                          text: 'Reviews by Layer'
                         },
                       },
                     }}

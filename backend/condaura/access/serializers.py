@@ -9,7 +9,7 @@ class AccessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Access
         fields = ['id', 'access_id', 'user', 'user_name', 'resource_name', 
-                  'resource_type', 'access_level', 'granted_date', 'last_used',
+                  'layer', 'profile', 'granted_date', 'last_used',
                   'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
     
@@ -22,7 +22,7 @@ class AccessDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Access
         fields = ['id', 'access_id', 'user', 'resource_name', 
-                  'resource_type', 'access_level', 'granted_date', 'last_used',
+                  'layer', 'profile', 'granted_date', 'last_used',
                   'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
@@ -42,8 +42,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     def get_access_details(self, obj):
         return {
             'resource_name': obj.access.resource_name,
-            'resource_type': obj.access.resource_type,
-            'access_level': obj.access.access_level,
+            'layer': obj.access.layer,
+            'profile': obj.access.profile,
             'user_name': f"{obj.access.user.first_name} {obj.access.user.last_name}"
         }
 
