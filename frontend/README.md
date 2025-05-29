@@ -2,120 +2,108 @@
 
 This is the frontend application for Condaura, a platform for access review campaigns.
 
-## Overview
+## Technologies Used
 
-Condaura allows organizations to:
-- Create and manage access review campaigns
-- Assign reviewers to access rights
-- Review and make decisions on access rights
-- Generate reports on campaign progress and results
-- Notify users about pending reviews and updates
+- React 19.1 with TypeScript
+- React Router 6.30 for navigation
+- Tailwind CSS for styling
+- Axios for API requests
+- React Toastify for notifications
+- Chart.js and React-Chartjs-2 for data visualization
+- Formik and Yup for form validation
 
-## Technologies
+## Features Implemented
 
-- React 18+ with TypeScript
-- TailwindCSS for styling
-- React Router for navigation
-- Formik and Yup for form handling and validation
-- Axios for API communication
-- React Query for data fetching and caching
+The frontend application includes the following features:
+
+- **Authentication**: Login, registration, and password recovery
+- **Dashboard**: Overview of access review campaigns and activities
+- **Campaigns**: List, create, and manage access review campaigns
+- **Reviews**: List and process access reviews (approve/reject)
+- **Reports**: View statistics and export reports in Excel/PDF
+- **Import**: Import users and access data from CSV files
+- **User Profile**: Manage user profile and change password
+- **Notifications**: Receive and manage notifications
+
+## Project Structure
+
+- **src/components**: Reusable UI components
+  - **common**: Common components like Layout, Button, etc.
+  - **auth**: Authentication-related components
+  - **campaigns**: Campaign-related components
+  - **reviews**: Review-related components
+  - **users**: User-related components
+- **src/contexts**: React context providers (Auth, etc.)
+- **src/pages**: Page components for different routes
+- **src/services**: API service modules
+- **src/types**: TypeScript type definitions
+- **src/utils**: Utility functions
+
+## Recent Improvements
+
+- Added missing pages: Profile, ForgotPassword, CampaignCreate, Import, Reports
+- Implemented a responsive sidebar navigation
+- Added loading indicators for better UX
+- Improved error handling and user feedback
+- Added data visualization for reports
+- Implemented export functionality
+- Improved mobile responsiveness
+
+## Future Work
+
+The following items are planned for future development:
+
+- **Accessibility Improvements**: Ensure all components are accessible
+- **Unit Tests**: Add comprehensive unit tests
+- **Internationalization**: Add support for multiple languages
+- **Themes**: Add support for light/dark themes
+- **Offline Mode**: Add support for offline operation
+- **Performance Optimization**: Improve performance with memoization and code splitting
+- **Progressive Web App**: Convert to a PWA for better mobile experience
+- **Real-time Updates**: Add WebSocket for real-time notifications
+- **User Settings**: Add more user settings and preferences
+- **Advanced Filtering**: Enhance filtering capabilities for campaigns and reviews
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 16+ and npm installed
-- Backend API running (see backend documentation)
+- Node.js 16+
+- npm or yarn
 
 ### Installation
 
-1. Install dependencies:
-```bash
-npm install
-```
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the development server:
+   ```
+   npm start
+   ```
 
-2. Set up environment variables:
-Create a `.env` file in the root directory with:
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
 ```
 REACT_APP_API_URL=http://localhost:8000/api
 ```
 
-3. Start the development server:
-```bash
-npm start
-```
-
-The application will be available at http://localhost:3000.
-
-## Project Structure
+## Build for Production
 
 ```
-frontend/
-├── public/                 # Static files
-├── src/
-│   ├── components/         # Reusable UI components
-│   │   ├── auth/           # Authentication components
-│   │   ├── campaigns/      # Campaign management components
-│   │   ├── common/         # Common components (layout, etc.)
-│   │   ├── reviews/        # Review components
-│   │   └── users/          # User management components
-│   ├── contexts/           # React contexts
-│   ├── pages/              # Page components
-│   ├── services/           # API services
-│   ├── types/              # TypeScript types
-│   ├── utils/              # Utility functions
-│   ├── App.tsx             # Application entry point
-│   └── index.tsx           # React entry point
-└── package.json            # Project dependencies
-```
-
-## Features
-
-### Authentication
-- Login with email/password
-- Registration for new users
-- Password reset
-
-### Dashboard
-- Overview of review progress
-- Recent notifications
-- Active campaigns
-
-### Campaign Management
-- Create and configure campaigns
-- Assign reviewers to access reviews
-- Track campaign progress
-
-### Access Reviews
-- Review assigned access rights
-- Approve or revoke access with comments
-- Bulk actions for multiple reviews
-
-### Notifications
-- In-app notifications
-- Mark notifications as read
-- Filter notifications by type
-
-## Building for Production
-
-To build the application for production:
-
-```bash
 npm run build
 ```
 
-This will create optimized files in the `build` directory ready for deployment.
+This will create a `build` directory with the production-ready application.
 
-## Deployment
+## Acknowledgements
 
-The application can be deployed to any static hosting service. Simply upload the contents of the `build` directory after running the build command.
-
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Submit a pull request
-
-## License
-
-This project is licensed under the proprietary license - see the LICENSE file for details.
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Chart.js](https://www.chartjs.org/)
+- [React Router](https://reactrouter.com/)
+- [Axios](https://axios-http.com/)
+- [React Toastify](https://fkhadra.github.io/react-toastify/)

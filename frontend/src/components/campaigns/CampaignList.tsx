@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CampaignService, { Campaign } from '../../services/campaign.service';
 
+interface ApiResponse {
+  results?: Campaign[];
+  [key: string]: any;
+}
+
 const CampaignList: React.FC = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -11,11 +16,27 @@ const CampaignList: React.FC = () => {
     const fetchCampaigns = async () => {
       try {
         setLoading(true);
-        const data = await CampaignService.getCampaigns();
-        setCampaigns(data);
+        const response = await CampaignService.getCampaigns();
+        // Ensure campaigns is always an array
+        if (Array.isArray(response)) {
+          setCampaigns(response);
+        } else if (response && typeof response === 'object') {
+          // Handle case where API returns { results: [...] }
+          const apiResponse = response as ApiResponse;
+          if (Array.isArray(apiResponse.results)) {
+            setCampaigns(apiResponse.results);
+          } else {
+            console.warn('API response is not in expected format:', response);
+            setCampaigns([]);
+          }
+        } else {
+          setCampaigns([]);
+          console.warn('Unexpected API response format:', response);
+        }
       } catch (error: any) {
         setError(error.message || 'Failed to fetch campaigns');
         console.error('Error fetching campaigns:', error);
+        setCampaigns([]);
       } finally {
         setLoading(false);
       }
@@ -36,11 +57,17 @@ const CampaignList: React.FC = () => {
     );
   }
 
-  if (campaigns.length === 0) {
+  if (!campaigns || campaigns.length === 0) {
     return (
       <div className="text-center p-8">
         <p className="mb-4">No campaigns found.</p>
-        <Link to="/campaigns/new" className="btn-primary">
+        <Link 
+          to="/campaigns/create" 
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
           Create New Campaign
         </Link>
       </div>
@@ -79,7 +106,13 @@ const CampaignList: React.FC = () => {
     <div className="overflow-x-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Campaigns</h2>
-        <Link to="/campaigns/new" className="btn-primary">
+        <Link 
+          to="/campaigns/create" 
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md transition-colors duration-200"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+          </svg>
           Create New Campaign
         </Link>
       </div>
@@ -96,7 +129,7 @@ const CampaignList: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {campaigns.map((campaign) => {
+          {Array.isArray(campaigns) && campaigns.map((campaign) => {
             const daysLeft = calculateDaysLeft(campaign.end_date);
             return (
               <tr key={campaign.id} className="hover:bg-gray-50">

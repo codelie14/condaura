@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Count
 import csv
 import io
 import pandas as pd
@@ -182,11 +182,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
             # For regular users, only show their reviews
             reviews = Review.objects.filter(campaign_filter, reviewer=user)
         
-        # Count by decision
-        decision_counts = reviews.values('decision').annotate(count=pd.value_counts('decision'))
+        # Count by decision using Django's Count aggregation
+        decision_counts = list(reviews.values('decision')
+                              .annotate(count=Count('id'))
+                              .order_by('decision'))
         
-        # Count by resource type
-        resource_counts = reviews.values('access__resource_type').annotate(count=pd.value_counts('access__resource_type'))
+        # Count by resource type using Django's Count aggregation
+        resource_counts = list(reviews.values('access__resource_type')
+                              .annotate(count=Count('id'))
+                              .order_by('access__resource_type'))
         
         return Response({
             'total': reviews.count(),

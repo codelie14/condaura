@@ -29,51 +29,51 @@ export interface CampaignStats {
 
 const CampaignService = {
   async getCampaigns(): Promise<Campaign[]> {
-    const response = await api.get<Campaign[]>('/access_review/campaigns/');
+    const response = await api.get<Campaign[]>('/campaigns/');
     return response.data;
   },
 
   async getCampaign(id: number): Promise<Campaign> {
-    const response = await api.get<Campaign>(`/access_review/campaigns/${id}/`);
+    const response = await api.get<Campaign>(`/campaigns/${id}/`);
     return response.data;
   },
 
   async createCampaign(data: CampaignCreateData): Promise<Campaign> {
-    const response = await api.post<Campaign>('/access_review/campaigns/', data);
+    const response = await api.post<Campaign>('/campaigns/', data);
     return response.data;
   },
 
   async updateCampaign(id: number, data: Partial<CampaignCreateData>): Promise<Campaign> {
-    const response = await api.put<Campaign>(`/access_review/campaigns/${id}/`, data);
+    const response = await api.put<Campaign>(`/campaigns/${id}/`, data);
     return response.data;
   },
 
   async deleteCampaign(id: number): Promise<void> {
-    await api.delete(`/access_review/campaigns/${id}/`);
+    await api.delete(`/campaigns/${id}/`);
   },
 
   async getCampaignStats(id: number): Promise<CampaignStats> {
-    const response = await api.get<CampaignStats>(`/access_review/campaigns/${id}/stats/`);
+    const response = await api.get<CampaignStats>(`/campaigns/${id}/stats/`);
     return response.data;
   },
 
   async startCampaign(id: number): Promise<Campaign> {
-    const response = await api.post<Campaign>(`/access_review/campaigns/${id}/start/`);
+    const response = await api.post<Campaign>(`/campaigns/${id}/start/`);
     return response.data;
   },
 
   async completeCampaign(id: number): Promise<Campaign> {
-    const response = await api.post<Campaign>(`/access_review/campaigns/${id}/complete/`);
+    const response = await api.post<Campaign>(`/campaigns/${id}/complete/`);
     return response.data;
   },
 
   async archiveCampaign(id: number): Promise<Campaign> {
-    const response = await api.post<Campaign>(`/access_review/campaigns/${id}/archive/`);
+    const response = await api.post<Campaign>(`/campaigns/${id}/archive/`);
     return response.data;
   },
 
   async exportReport(id: number, format: 'pdf' | 'excel' | 'csv'): Promise<Blob> {
-    const response = await api.get(`/access_review/campaigns/${id}/export/${format}/`, {
+    const response = await api.get(`/campaigns/${id}/export/${format}/`, {
       responseType: 'blob'
     });
     return response.data;
