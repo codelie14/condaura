@@ -41,6 +41,9 @@ schema_view = get_schema_view(
 urlpatterns = [
     # Home page
     path('', home, name='home'),
+
+    # Allauth URLs
+    path('accounts/', include('allauth.urls')),
     
     # API Documentation
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),

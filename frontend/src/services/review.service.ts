@@ -42,7 +42,7 @@ export interface ReviewsResponse {
 
 const ReviewService = {
   async getReviews(campaignId?: number, status?: string, page = 1): Promise<ReviewsResponse> {
-    let url = '/access_review/reviews/';
+    let url = '/reviews/';
     const params: Record<string, any> = { page };
     
     if (campaignId) {
@@ -58,24 +58,24 @@ const ReviewService = {
   },
 
   async getReview(id: number): Promise<Review> {
-    const response = await api.get<Review>(`/access_review/reviews/${id}/`);
+    const response = await api.get<Review>(`/reviews/${id}/`);
     return response.data;
   },
 
   async submitDecision(id: number, decision: ReviewDecision): Promise<Review> {
-    const response = await api.post<Review>(`/access_review/reviews/${id}/decide/`, decision);
+    const response = await api.post<Review>(`/reviews/${id}/decide/`, decision);
     return response.data;
   },
 
   async bulkApprove(reviewIds: number[], comment: string): Promise<void> {
-    await api.post('/access_review/reviews/bulk-approve/', { 
+    await api.post('/reviews/bulk-approve/', {
       review_ids: reviewIds,
       comment 
     });
   },
 
   async bulkRevoke(reviewIds: number[], comment: string): Promise<void> {
-    await api.post('/access_review/reviews/bulk-revoke/', { 
+    await api.post('/reviews/bulk-revoke/', {
       review_ids: reviewIds,
       comment 
     });
@@ -87,7 +87,7 @@ const ReviewService = {
       params.decision = status;
     }
     
-    const response = await api.get<ReviewsResponse>('/access_review/reviews/my-reviews/', { params });
+    const response = await api.get<ReviewsResponse>('/reviews/my-reviews/', { params });
     return response.data;
   },
 
@@ -98,7 +98,7 @@ const ReviewService = {
     revoked: number;
     deferred: number;
   }> {
-    const response = await api.get('/access_review/reviews/stats/');
+    const response = await api.get('/reviews/stats/');
     return response.data;
   }
 };

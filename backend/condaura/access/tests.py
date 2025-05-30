@@ -235,6 +235,56 @@ class AccessAPITests(TestCase):
         # Ici nous vérifions juste que l'endpoint est accessible
         self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_201_CREATED])
 
+    def test_import_csv_missing_required_fields(self):
+        """Test import CSV avec des champs requis manquants."""
+        url = reverse("access-import-csv")
+        csv_file = io.StringIO()
+        writer = csv.writer(csv_file)
+        # Manque resource_name, resource_type, access_level
+        writer.writerow(["access_id", "user_id", "granted_date"])
+        writer.writerow(["ACCESS005", "USER001", timezone.now().date().isoformat()])
+        csv_file.seek(0)
+        response = self.client.post(url, {"file": csv_file}, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) # Ou 200 OK avec des erreurs listées
+        # Example check if server responds 200 OK but with an error list in JSON
+        # if status.HTTP_200_OK == response.status_code:
+        #      self.assertIn("errors", response.data)
+        #      self.assertTrue(len(response.data["errors"]) > 0)
+        #      self.assertIn("missing required fields", response.data["errors"][0].lower())
+
+    def test_import_csv_non_existent_user(self):
+        """Test import CSV avec un user_id non existant."""
+        url = reverse("access-import-csv")
+        csv_file = io.StringIO()
+        writer = csv.writer(csv_file)
+        writer.writerow(["access_id", "user_id", "resource_name", "resource_type", "access_level", "granted_date"])
+        writer.writerow(["ACCESS006", "NONEXISTENT_USER", "Resource X", "App", "Read", timezone.now().date().isoformat()])
+        csv_file.seek(0)
+        response = self.client.post(url, {"file": csv_file}, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) # Ou 200 OK avec des erreurs
+        # Example check if server responds 200 OK but with an error list in JSON
+        # if status.HTTP_200_OK == response.status_code:
+        #      self.assertIn("errors", response.data)
+        #      self.assertTrue(len(response.data["errors"]) > 0)
+        #      self.assertIn("not found", response.data["errors"][0].lower())
+
+    def test_import_csv_duplicate_access_id(self):
+        """Test import CSV avec un access_id dupliqué."""
+        # self.access1 (ACCESS001) existe déjà dans le setUp
+        url = reverse("access-import-csv")
+        csv_file = io.StringIO()
+        writer = csv.writer(csv_file)
+        writer.writerow(["access_id", "user_id", "resource_name", "resource_type", "access_level", "granted_date"])
+        writer.writerow([self.access1.access_id, "USER001", "Duplicate Resource", "App", "Read", timezone.now().date().isoformat()])
+        csv_file.seek(0)
+        response = self.client.post(url, {"file": csv_file}, format="multipart")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) # Ou 200 OK avec des erreurs
+        # Example check if server responds 200 OK but with an error list in JSON
+        # if status.HTTP_200_OK == response.status_code:
+        #      self.assertIn("errors", response.data)
+        #      self.assertTrue(len(response.data["errors"]) > 0)
+        #      self.assertIn("already exists", response.data["errors"][0].lower())
+
 class ReviewAPITests(TestCase):
     """Tests pour l'API Review"""
     

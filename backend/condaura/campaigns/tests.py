@@ -287,6 +287,78 @@ class CampaignServiceTests(TestCase):
         self.assertEqual(stats['by_decision'].get('approved', 0), 1)
         self.assertEqual(stats['by_decision'].get('pending', 0), 1)
 
+    def test_send_reminders_for_campaign_nearing_end_date(self):
+        """Test l envoi de rappels pour une campagne active proche de sa date de fin."""
+        from django.core import mail
+        import datetime # Ensure datetime is imported if not already globally
+
+        # Configurer la campagne pour qu elle se termine dans 2 jours
+        self.campaign.status = "active"
+        self.campaign.end_date = timezone.now().date() + datetime.timedelta(days=2)
+        self.campaign.save()
+
+        # Créer une revue en attente pour cette campagne
+        Review.objects.create(
+            campaign=self.campaign,
+            access=self.access1,
+            reviewer=self.user1,  # user1 a un email: user1@example.com
+            decision="pending"
+        )
+
+        success, message = CampaignService.send_reminders(campaign_id=self.campaign.id)
+        self.assertTrue(success)
+        self.assertIn("1 rappels envoyés", message)  # Attend 1 car un seul réviseur
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.user1.email])
+        self.assertIn(f"Campagne {self.campaign.name}", mail.outbox[0].subject)
+
+    def test_send_reminders_no_pending_reviews(self):
+        """Test qu aucun rappel n est envoyé si pas de revues en attente."""
+        from django.core import mail
+        import datetime
+
+        self.campaign.status = "active"
+        self.campaign.end_date = timezone.now().date() + datetime.timedelta(days=2)
+        self.campaign.save()
+
+        # Aucune revue en attente créée
+        success, message = CampaignService.send_reminders(campaign_id=self.campaign.id)
+        self.assertTrue(success)
+        self.assertIn("0 rappels envoyés", message)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_send_reminders_for_all_active_campaigns(self):
+        """Test l envoi de rappels pour toutes les campagnes actives (sans ID spécifique)."""
+        from django.core import mail
+        import datetime
+
+        # Campagne 1 (self.campaign)
+        self.campaign.status = "active"
+        self.campaign.end_date = timezone.now().date() + datetime.timedelta(days=1)
+        self.campaign.save()
+        Review.objects.create(campaign=self.campaign, access=self.access1, reviewer=self.user1, decision="pending")
+
+        # Campagne 2
+        campaign2 = Campaign.objects.create(
+            name="Campaign 2", created_by=self.admin, status="active",
+            start_date=timezone.now().date(), end_date=timezone.now().date() + datetime.timedelta(days=1)
+        )
+        # Ensure User model is accessible, it should be from class setUp or global imports
+        user_manager = User.objects.create_user(username="manager@example.com", email="manager@example.com", user_id="MANAGER01")
+        access_for_campaign2 = Access.objects.create(access_id="ACCESS_C2", user=user_manager, resource_name="Res C2", resource_type="App")
+        Review.objects.create(campaign=campaign2, access=access_for_campaign2, reviewer=user_manager, decision="pending")
+
+        success, message = CampaignService.send_reminders() # Pas de campaign_id
+        self.assertTrue(success)
+        # This assertion might be fragile if other tests create active campaigns or if send_reminders has wider effects.
+        # For more robustness, consider isolating or specifically querying the expected number of reminders.
+        self.assertIn("2 rappels envoyés", message)
+        self.assertEqual(len(mail.outbox), 2)
+        # Vérifier que les emails sont envoyés aux bons destinataires (simplifié)
+        emails_sent_to = {email.to[0] for email in mail.outbox}
+        self.assertIn(self.user1.email, emails_sent_to)
+        self.assertIn(user_manager.email, emails_sent_to)
+
 class CampaignAPITests(TestCase):
     """Tests pour l'API Campaign"""
     

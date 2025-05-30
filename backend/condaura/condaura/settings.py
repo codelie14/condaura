@@ -48,6 +48,13 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
     'drf_yasg',
+
+    # Allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.microsoft',
     
     # Local apps
     'users',
@@ -64,6 +71,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -147,6 +155,50 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Allauth settings
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'APP': {
+            'client_id': 'YOUR_GOOGLE_CLIENT_ID_HERE',
+            'secret': 'YOUR_GOOGLE_SECRET_HERE',
+            'key': ''
+        }
+    },
+    'microsoft': {
+        'SCOPE': [
+            'User.Read',
+        ],
+        'AUTH_PARAMS': {},
+        'APP': {
+            'client_id': 'YOUR_MICROSOFT_CLIENT_ID_HERE',
+            'secret': 'YOUR_MICROSOFT_SECRET_HERE',
+            'key': ''
+        }
+    }
+}
+
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # or "mandatory" or "none"
+ACCOUNT_LOGIN_METHODS = ('username', 'email') # Allows login with username or email
+LOGIN_REDIRECT_URL = '/' # URL to redirect to after login
+ACCOUNT_LOGOUT_ON_GET = True # Logout user on GET request to logout URL
 
 # REST Framework settings
 REST_FRAMEWORK = {
