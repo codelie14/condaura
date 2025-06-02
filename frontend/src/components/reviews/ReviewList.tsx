@@ -192,7 +192,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ campaignId }) => {
               </th>
               <th className="py-2 px-4 border-b text-left">User</th>
               <th className="py-2 px-4 border-b text-left">Resource</th>
-              <th className="py-2 px-4 border-b text-left">Access Level</th>
+              <th className="py-2 px-4 border-b text-left">Profile</th>
               <th className="py-2 px-4 border-b text-left">Last Used</th>
               <th className="py-2 px-4 border-b text-center">Actions</th>
             </tr>
@@ -217,9 +217,9 @@ const ReviewList: React.FC<ReviewListProps> = ({ campaignId }) => {
                 </td>
                 <td className="py-2 px-4 border-b">
                   <div className="font-medium">{review.access.resource_name}</div>
-                  <div className="text-xs text-gray-500">{review.access.resource_type}</div>
+                  <div className="text-xs text-gray-500">{review.access.layer || review.access.resource_type}</div>
                 </td>
-                <td className="py-2 px-4 border-b">{review.access.access_level}</td>
+                <td className="py-2 px-4 border-b">{review.access.profile || review.access.access_level}</td>
                 <td className="py-2 px-4 border-b">
                   {review.access.last_used ? new Date(review.access.last_used).toLocaleDateString() : 'Never'}
                 </td>

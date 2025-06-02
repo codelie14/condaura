@@ -16,6 +16,7 @@ const ReviewList = React.lazy(() => import('./components/reviews/ReviewList'));
 const ForgotPasswordPage = React.lazy(() => import('./pages/ForgotPasswordPage'));
 const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
 const CampaignCreatePage = React.lazy(() => import('./pages/CampaignCreatePage'));
+const CampaignDetailPage = React.lazy(() => import('./pages/CampaignDetailPage'));
 const ImportPage = React.lazy(() => import('./pages/ImportPage'));
 const ReportsPage = React.lazy(() => import('./pages/ReportsPage'));
 
@@ -50,7 +51,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user?.role !== 'admin' && !user?.is_staff) {
+  if (user?.role?.toLowerCase() !== 'admin' && !user?.is_staff) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -100,6 +101,12 @@ function App() {
               <AdminRoute>
                 <CampaignCreatePage />
               </AdminRoute>
+            } />
+            
+            <Route path="/campaigns/:id" element={
+              <ProtectedRoute>
+                <CampaignDetailPage />
+              </ProtectedRoute>
             } />
             
             <Route path="/reviews" element={

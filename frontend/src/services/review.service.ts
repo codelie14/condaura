@@ -12,8 +12,10 @@ export interface Access {
     department: string;
   };
   resource_name: string;
-  resource_type: string;
-  access_level: string;
+  layer: string;
+  profile: string;
+  resource_type?: string;
+  access_level?: string;
   granted_date: string;
   last_used: string | null;
 }

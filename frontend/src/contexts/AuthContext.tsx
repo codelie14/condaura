@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AuthService, { LoginCredentials, RegisterData } from '../services/auth.service';
 
 // Les valeurs possibles pour les rôles utilisateur
-type UserRole = 'Admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team' | string;
+export type UserRole = 'Admin' | 'admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team' | string;
 
 interface User {
   id: number;

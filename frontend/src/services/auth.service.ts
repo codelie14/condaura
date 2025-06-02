@@ -15,7 +15,7 @@ export interface RegisterData {
 }
 
 // Les rôles disponibles dans l'application
-export type UserRole = 'Admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team';
+export type UserRole = 'Admin' | 'admin' | 'Back office' | 'Front office' | 'DAO' | 'Digital Team';
 
 export interface AuthResponse {
   token: string;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import StatusHeader from './StatusHeader';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -132,7 +133,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               ))}
               
               {/* Admin Items */}
-              {(user?.role === 'admin' || user?.is_staff) && (
+              {(user?.role?.toLowerCase() === 'admin' || user?.is_staff) && (
                 <>
                   <li className="mt-6 mb-2">
                     {!isSidebarCollapsed && (
@@ -229,6 +230,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
+        {/* Status Header */}
+        <StatusHeader />
+        
         {/* Top Header */}
         <header className="bg-white shadow-sm z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -237,6 +241,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {location.pathname === '/dashboard' && 'Dashboard'}
                 {location.pathname === '/campaigns' && 'Campaigns'}
                 {location.pathname === '/campaigns/create' && 'Create Campaign'}
+                {location.pathname.match(/^\/campaigns\/\d+$/) && 'Campaign Details'}
                 {location.pathname === '/reviews' && 'Reviews'}
                 {location.pathname === '/reports' && 'Reports & Analytics'}
                 {location.pathname === '/import' && 'Import Data'}
@@ -295,7 +300,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </Link>
               ))}
               
-              {(user?.role === 'admin' || user?.is_staff) && adminItems.map((item) => (
+              {(user?.role?.toLowerCase() === 'admin' || user?.is_staff) && adminItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}

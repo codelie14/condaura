@@ -61,7 +61,7 @@ const CampaignCreatePage: React.FC = () => {
         
         setDepartments(['DIGITAL', 'CS', 'PS', 'RAN', 'TRANS', 'IN', 'VAS', 'CLOUD', 'IP']);
         setLayers(['Application', 'Database', 'System']);
-        setProfiles(['Admin', 'Read/Write', 'Write only', 'user', 'Viewer', 'Operator']);
+        setProfiles(['Admin', 'Read/Write', 'Read only', 'Write only', 'user', 'Viewer', 'Operator']);
         setRoles(['Admin', 'Back office', 'Front office', 'DAO', 'Digital Team']);
       } catch (err) {
         console.error('Failed to fetch data:', err);
